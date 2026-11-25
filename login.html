@@ -1,0 +1,20 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Entrar - área de edição</title>
+<style>:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;background:#0d0a12;color:#ece8f3;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+form{width:min(440px,100%);background:#1b1820;border:1px solid #6a3fc0;border-radius:18px;padding:28px}h1{font-size:20px;margin:0 0 6px}p{color:#b5aec0;margin:0 0 16px;font-size:14px}
+label{display:block;font-size:12px;color:#9a93a6;margin:12px 0 6px;font-weight:600}input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #3a3446;background:#121016;color:#ece8f3;font:inherit}
+input:focus{outline:none;border-color:#9a6cff}button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:10px;background:#8b54e8;color:#fff;font:600 15px system-ui,sans-serif;cursor:pointer}button:disabled{opacity:.6}
+.err{color:#ff8fa3;margin:14px 0 0;font-size:14px;min-height:1em}a{color:#b08cff}small{display:block;color:#8d8699;margin-top:16px;font-size:12px}</style></head><body>
+<form id="f"><h1>&#128274; Área de edição</h1><p>Cole a chave de edição que o dono do site te passou. Ela fica salva só neste navegador.</p>
+<label for="k">Chave de edição</label><input id="k" type="password" autocomplete="off" required autofocus>
+<button id="b" type="submit">Entrar e editar</button><p class="err" id="e" role="alert"></p>
+<small><a href="./">Voltar ao site</a></small></form>
+<script>
+const KEY='ms_gh_token',API='https://api.github.com/repos/neriidev/multistore-site';
+document.getElementById('f').onsubmit=async ev=>{ev.preventDefault();const b=document.getElementById('b'),e=document.getElementById('e'),k=document.getElementById('k').value.trim();
+e.textContent='';b.disabled=true;b.textContent='Conferindo…';
+try{const r=await fetch(API,{cache:'no-store',headers:{'Authorization':'Bearer '+k,'Accept':'application/vnd.github+json'}});const d=await r.json().catch(()=>({}));
+if(!r.ok)throw new Error(r.status===401?'Chave inválida ou expirada.':'Não foi possível conferir a chave (erro '+r.status+').');
+if(!(d.permissions&&d.permissions.push))throw new Error('Essa chave não tem permissão para editar o site.');
+try{localStorage.setItem(KEY,k)}catch(_){throw new Error('Este navegador bloqueou o salvamento. Saia do modo anônimo e tente de novo.')}
+location.replace('./?editar#editar')}catch(x){e.textContent=x.message;b.disabled=false;b.textContent='Entrar e editar'}};
+</script></body></html>
